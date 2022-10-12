@@ -1,0 +1,43 @@
+security:
+    enable_authenticator_manager: true
+    password_hashers:
+        App\Entity\User:
+            algorithm: bcrypt
+            cost: 12
+        Symfony\Component\Security\Core\User\User:
+            algorithm: bcrypt
+            cost: 12
+
+    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    providers:
+        swagger_user_provider:
+            memory:
+                users:
+                    swagger: { password: 'toto', roles: ['ROLE_SWAGGER'] }
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        swagger:
+            pattern: ^/v1/docs
+            stateless: true
+            http_basic:
+                provider: swagger_user_provider
+                realm: Test-Api secured area
+        api:
+            pattern: ^/v1/
+            stateless: true
+            provider: swagger_user_provider
+        main: ~
+
+    access_decision_manager:
+        strategy: unanimous
+        allow_if_all_abstain: false
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+        - { path: ^/monitor, roles: PUBLIC_ACCESS }
+        - { path: ^/v1/docs, roles: ROLE_SWAGGER }
+        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

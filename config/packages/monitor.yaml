@@ -1,0 +1,26 @@
+liip_monitor:
+    enable_controller: true
+    default_group: app
+    checks:
+        groups:
+            other:
+                symfony_version: true
+            app:
+                php_version:
+                    '8.1': '>='
+                php_extensions: [ apcu ]
+                opcache_memory:
+                    warning: 70
+                    critical: 90
+                readable_directory:
+                    - '%kernel.cache_dir%'
+                writable_directory:
+                    - '%kernel.cache_dir%'
+                doctrine_dbal:
+                    - default
+                pdo_connections:
+                    postgres:
+                        dsn: 'pgsql:host=%env(string:DATABASE_HOST)%;port=%env(int:DATABASE_PORT)%;dbname=%env(string:DATABASE_NAME)%'
+                        username: '%env(string:DATABASE_USER)%'
+                        password: '%env(string:DATABASE_PASSWORD)%'
+                        timeout: 1

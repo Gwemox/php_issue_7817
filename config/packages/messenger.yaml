@@ -1,0 +1,25 @@
+framework:
+    messenger:
+        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+#        failure_transport: api_failed
+        reset_on_message: true
+        serializer:
+            default_serializer: messenger.transport.symfony_serializer
+            symfony_serializer:
+                format: json
+                context: { }
+
+        transports:
+            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            sync: 'sync://'
+
+        routing:
+            # Route your messages to the transports
+        buses:
+            messenger.bus.default:
+                middleware:
+                    # each time a message is handled, the Doctrine connection
+                    # is "pinged" and reconnected if it's closed. Useful
+                    # if your workers run for a long time and the database
+                    # connection is sometimes lost
+                    - doctrine_ping_connection
